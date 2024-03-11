@@ -1,4 +1,5 @@
 import random
+import re
 inputs = ["A","B","C"]
 gates = ["AND","OR","XOR","NAND"]
 expression = ""
@@ -42,6 +43,8 @@ def generate_subexpression():
             subexpression += random.choice(gates)
     return subexpression
 
+subexpressions = []
+
 def generate_expression():
     expression = ""
     for x in range(3):
@@ -50,4 +53,22 @@ def generate_expression():
             expression += random.choice(gates)
     return expression
 
-print(generate_expression())
+expression = generate_expression()
+
+print("Complete the tracetable for X="+expression+".")
+# print("|  A  |  B  |  C  |  X  |")
+# print("|-----------------------|")
+# print("|  1  |  1  |  1  |     |")
+# print("|  1  |  1  |  0  |     |")
+# print("|  1  |  0  |  1  |     |")
+# print("|  1  |  0  |  0  |     |")
+# print("|  0  |  1  |  1  |     |")
+# print("|  0  |  1  |  0  |     |")
+# print("|  0  |  0  |  1  |     |")
+# print("|  0  |  0  |  0  |     |")
+
+gates.append("NOT")
+
+# def solve(expression):
+#     re.split("(",expression)
+
