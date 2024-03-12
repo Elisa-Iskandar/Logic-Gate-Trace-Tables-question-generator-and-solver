@@ -43,8 +43,6 @@ def generate_subexpression():
             subexpression += random.choice(gates)
     return subexpression
 
-subexpressions = []
-
 def generate_expression():
     expression = ""
     for x in range(3):
@@ -67,8 +65,39 @@ print("Complete the tracetable for X="+expression+".")
 # print("|  0  |  0  |  1  |     |")
 # print("|  0  |  0  |  0  |     |")
 
-gates.append("NOT")
+def solve(expression):
+    temp = re.sub(r'\(+|\)+', ' ', expression)
+    operators = list(temp.split(" "))
+    operators.pop(0)
+    operators.pop(-1)
 
-# def solve(expression):
-#     re.split("(",expression)
+    results = []
+    values = [[1,1,1],[1,1,0],[1,0,1],[1,0,0],[0,1,1],[0,1,0],[0,0,1],[0,0,0]]
+    temp2 = None
+
+    for x in range(len(values)):
+        for y in range(len(operators)):
+            if operators[y] == "A":
+                operators[y] = values[x][0]
+            elif operators[y] == "B":
+                operators[y] = values[x][1]
+            elif operators[y] == "C":
+                operators[y] = values[x][2]
+
+        count = 0
+        limit = len(operators)
+        while count < limit:
+            if operators[count] == "NOT":
+                operators[count] = NOT(operators[count+1])
+                operators.pop(count+1)
+                limit-=1
+            elif operators[count] in gates:
+                if operators[count] == "AND": #,"OR","XOR","NAND"]
+                operators[count-1],operators[count+1]
+
+                
+        
+        
+
+
 
