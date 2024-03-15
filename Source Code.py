@@ -45,25 +45,11 @@ def generate_subexpression():
 
 def generate_expression():
     expression = ""
-    for x in range(3):
+    for x in range(2):
         expression += "(" + generate_subexpression() + ")"
-        if x < 2:
+        if x < 1:
             expression += random.choice(gates)
     return expression
-
-expression = generate_expression()
-
-print("Complete the tracetable for X="+expression+".")
-# print("|  A  |  B  |  C  |  X  |")
-# print("|-----------------------|")
-# print("|  1  |  1  |  1  |     |")
-# print("|  1  |  1  |  0  |     |")
-# print("|  1  |  0  |  1  |     |")
-# print("|  1  |  0  |  0  |     |")
-# print("|  0  |  1  |  1  |     |")
-# print("|  0  |  1  |  0  |     |")
-# print("|  0  |  0  |  1  |     |")
-# print("|  0  |  0  |  0  |     |")
 
 def solve(expression):
     temp = re.sub(r'\(+|\)+', ' ', expression)
@@ -71,33 +57,104 @@ def solve(expression):
     operators.pop(0)
     operators.pop(-1)
 
-    results = []
+    answers = []
     values = [[1,1,1],[1,1,0],[1,0,1],[1,0,0],[0,1,1],[0,1,0],[0,0,1],[0,0,0]]
-    temp2 = None
 
     for x in range(len(values)):
+        operators2 = list(operators)
         for y in range(len(operators)):
             if operators[y] == "A":
-                operators[y] = values[x][0]
+                operators2[y] = values[x][0]
             elif operators[y] == "B":
-                operators[y] = values[x][1]
+                operators2[y] = values[x][1]
             elif operators[y] == "C":
-                operators[y] = values[x][2]
+                operators2[y] = values[x][2]
 
         count = 0
-        limit = len(operators)
-        while count < limit:
-            if operators[count] == "NOT":
-                operators[count] = NOT(operators[count+1])
-                operators.pop(count+1)
-                limit-=1
-            elif operators[count] in gates:
-                if operators[count] == "AND": #,"OR","XOR","NAND"]
-                operators[count-1],operators[count+1]
 
+        while "NOT" in operators2:
+            if operators2[count] == "NOT":
+                operators2[count] = NOT(operators2[count+1])
+                operators2.pop(count+1)
+            count+=1
+
+        count = 0
+
+        for y in range(2):
+            if y == 0:
+                count = 1
+            else:
+                count = 3
+            if operators2[count] == "AND": 
+                operators2[count] = AND(operators2[count-1],operators2[count+1])
+            elif operators2[count] == "OR": 
+                operators2[count] = OR(operators2[count-1],operators2[count+1])
+            elif operators2[count] == "XOR": 
+                operators2[count] = XOR(operators2[count-1],operators2[count+1])
+            else:
+                operators2[count] = NAND(operators2[count-1],operators2[count+1])
+            operators2.pop(count-1)
+            operators2.pop(count)
+
+        if operators2[1] == "AND": 
+            answers.append(AND(operators2[0],operators2[2]))
+        elif operators2[1] == "OR": 
+            answers.append(OR(operators2[0],operators2[2]))
+        elif operators2[1] == "XOR": 
+            answers.append(XOR(operators2[0],operators2[2]))
+        else:
+            answers.append(NAND(operators2[0],operators2[2]))
                 
+    return answers
         
-        
+def check(m):
+    outlist = []
+    for x in range(8):
+        temp = int(input())
+        if temp == m[x]:
+            outlist.append('right')
+        else:
+            outlist.append('wrong')
+    print(m)
+    return outlist
 
+def high_score(n):
+    try:
+        with open("high_score.txt", "r") as file:
+            hscore = int(file.read())
+            if n > hscore:
+                file = open("high_score.txt", "w")
+                file.write(str(n))
+                file.close()
+                return 1
+            else:
+                file.close()
+                return 1
+    except FileNotFoundError:
+        file = open("high_score", "w")
+        file.write(str(n))
+        file.close()
+        return 1
 
+count = 0
+while True:
+    expression = generate_expression()
 
+    print("Complete the tracetable for X="+expression+".")
+    print("|  A  |  B  |  C  |  X  |")
+    print("|-----------------------|")
+    print("|  1  |  1  |  1  |     |")
+    print("|  1  |  1  |  0  |     |")
+    print("|  1  |  0  |  1  |     |")
+    print("|  1  |  0  |  0  |     |")
+    print("|  0  |  1  |  1  |     |")
+    print("|  0  |  1  |  0  |     |")
+    print("|  0  |  0  |  1  |     |")
+    print("|  0  |  0  |  0  |     |")
+
+    answer = solve(expression)
+    temp = check(answer)
+    print(temp)
+    if temp.count('right') == 8:
+        count += 1
+    high_score(count)
